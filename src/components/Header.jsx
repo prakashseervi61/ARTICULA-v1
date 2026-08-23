@@ -9,7 +9,7 @@ export default function Header() {
   const navItems = [
     { id: 'landing', label: 'Overview', icon: Activity, path: '/' },
     { id: 'how-it-works', label: 'How It Works', icon: Cpu, path: '/how-it-works' },
-    { id: 'workspace', label: 'Workspace', icon: Layers, path: '/workspace' },
+    { id: 'workspace', label: 'OA Grader', icon: Layers, path: '/workspace' },
     { id: 'mri-explorer', label: 'MRI Explorer', icon: ScanLine, path: '/mri-explorer' },
     { id: 'implant-matching', label: 'Implant Sizing', icon: Ruler, path: '/implant-matching' },
     { id: 'report', label: 'Clinical Report', icon: FileText, path: '/report' },
