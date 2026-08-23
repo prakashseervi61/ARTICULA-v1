@@ -37,8 +37,8 @@ export default function GradCamPanel({ selectedCase }) {
   }
 
   const oaGrade = selectedCase.oaGrade ?? 3;
-  const rawImgUrl = getAssetUrl(selectedCase.imageUrl || selectedCase.sampleImageUrl || `/assets/samples/${selectedCase.id.toLowerCase().replace(/#/g, '')}.png`);
-  const gradcamImgUrl = getAssetUrl(`/assets/gradcam/gradcam_grade${oaGrade}.png`);
+  const rawImgUrl = selectedCase.imageUrl || `/assets/samples/${selectedCase.id.toLowerCase().replace(/#/g, '')}.png`;
+  const gradcamImgUrl = `/assets/gradcam/gradcam_grade${oaGrade}.png`;
 
   const isSevereOrModerate = oaGrade >= 2;
 

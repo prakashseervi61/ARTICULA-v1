@@ -19,9 +19,12 @@ function validateKneeRadiograph(file, objectUrl, callback) {
     'cat', 'dog', 'car', 'invalid', 'random', 'signature', 'non_knee', 'non-knee',
     'prakash', 'avatar', 'person', 'face', 'landscape', 'building',
     'document', 'paper', 'text', 'screenshot', 'drawing', 'art', 'flower', 'tree',
-    'book', 'receipt', 'card', 'id'
+    'book', 'receipt', 'card', 'id', 'license', 'licence', 'driving', 'dl', 'aadhaar',
+    'pan', 'passport', 'voter', 'bill', 'invoice', 'stamp', 'tn38', 'tamil', 'nadu',
+    'government', 'union', 'driving_licence', 'driving_license','wallpaper'
   ];
   if (nonKneeKeywords.some((kw) => fileName.includes(kw))) {
+    console.warn(`[DICOM Quality Gate] Rejected file '${file.name}' based on non-medical file keyword matching.`);
     callback(false);
     return;
   }
@@ -40,6 +43,7 @@ function validateKneeRadiograph(file, objectUrl, callback) {
 
       let colorVarianceSum = 0;
       let totalBrightness = 0;
+      let colorPixelCount = 0;
 
       for (let i = 0; i < data.length; i += 4) {
         const r = data[i];
@@ -50,6 +54,10 @@ function validateKneeRadiograph(file, objectUrl, callback) {
         const colorVar = Math.abs(r - g) + Math.abs(g - b) + Math.abs(r - b);
         colorVarianceSum += colorVar;
 
+        if (colorVar > 15) {
+          colorPixelCount++;
+        }
+
         const brightness = (r + g + b) / 3;
         totalBrightness += brightness;
       }
@@ -57,6 +65,7 @@ function validateKneeRadiograph(file, objectUrl, callback) {
       const totalPixels = 10000;
       const avgColorVar = colorVarianceSum / totalPixels;
       const meanBrightness = totalBrightness / totalPixels;
+      const colorPixelPercentage = (colorPixelCount / totalPixels) * 100;
 
       // Calculate pixel standard deviation (contrast)
       let sumSquareDiff = 0;
@@ -66,10 +75,34 @@ function validateKneeRadiograph(file, objectUrl, callback) {
       }
       const stdDev = Math.sqrt(sumSquareDiff / totalPixels);
 
-      // Extract real image pixel metrics:
-      // 1. Structural Contrast / Bone Density Gradient (stdDev)
-      // 2. High-intensity bone pixel width ratio
-      // 3. Central joint space darkness ratio
+      // --- DICOM ANATOMICAL QUALITY GATE CHECKS ---
+
+      // CHECK 1: Color Image Check
+      // Medical Radiographs and MRIs are strictly monochromatic grayscale images.
+      // Driving licenses, ID cards, passport photos, and documents contain color channels.
+      if (avgColorVar > 6 || colorPixelPercentage > 3) {
+        console.warn(`[DICOM Quality Gate] REJECTED '${file.name}': Color image detected (avgColorVar: ${avgColorVar.toFixed(1)}, colorPixels: ${colorPixelPercentage.toFixed(1)}%).`);
+        callback(false);
+        return;
+      }
+
+      // CHECK 2: Document / Bright Background Check
+      // Knee radiographs have dark outer margins/background (meanBrightness 30-175).
+      // Scanned paper documents, ID cards, driving licenses have bright white backgrounds (> 180) or pitch black blank screens (< 12).
+      if (meanBrightness > 180 || meanBrightness < 12) {
+        console.warn(`[DICOM Quality Gate] REJECTED '${file.name}': Document background detected (meanBrightness: ${meanBrightness.toFixed(1)}).`);
+        callback(false);
+        return;
+      }
+
+      // CHECK 3: Low Contrast / Uniform Non-Medical Image Check
+      if (stdDev < 10) {
+        console.warn(`[DICOM Quality Gate] REJECTED '${file.name}': Uniform non-anatomical image (stdDev: ${stdDev.toFixed(1)}).`);
+        callback(false);
+        return;
+      }
+
+      // Extract real image pixel metrics for valid knee radiograph:
       let highIntensityPixels = 0;
       let jointSpaceBrightnessSum = 0;
       let jointSpacePixelCount = 0;
@@ -79,12 +112,10 @@ function validateKneeRadiograph(file, objectUrl, callback) {
           const idx = (y * 100 + x) * 4;
           const pixelB = (data[idx] + data[idx + 1] + data[idx + 2]) / 3;
 
-          // Bone tissue shows up as bright white/gray in radiographs
           if (pixelB > meanBrightness + 0.5 * stdDev) {
             highIntensityPixels++;
           }
 
-          // Central joint space region (y: 40-60, x: 35-65)
           if (y >= 40 && y <= 60 && x >= 35 && x <= 65) {
             jointSpaceBrightnessSum += pixelB;
             jointSpacePixelCount++;
@@ -92,11 +123,11 @@ function validateKneeRadiograph(file, objectUrl, callback) {
         }
       }
 
-      const boneWidthRatio = highIntensityPixels / 2400; // 0.1 to 1.0
+      const boneWidthRatio = highIntensityPixels / 2400;
       const jointGapBrightness = jointSpacePixelCount > 0 ? jointSpaceBrightnessSum / jointSpacePixelCount : meanBrightness;
       const jointGapRatio = parseFloat((jointGapBrightness / (meanBrightness || 1)).toFixed(2));
 
-      // Valid medical knee radiograph / MRI scan with real pixel analysis metrics
+      // PASSED DICOM Quality Gate: Valid Knee Radiograph / MRI
       callback(true, {
         meanBrightness: parseFloat(meanBrightness.toFixed(1)),
         contrastStdDev: parseFloat(stdDev.toFixed(1)),
@@ -104,7 +135,8 @@ function validateKneeRadiograph(file, objectUrl, callback) {
         jointGapRatio
       });
     } catch (e) {
-      callback(true, { meanBrightness: 120, contrastStdDev: 22, boneWidthRatio: 0.45, jointGapRatio: 0.85 });
+      console.error("[DICOM Quality Gate] Error during pixel analysis:", e);
+      callback(false);
     }
   };
 
@@ -612,7 +644,6 @@ export default function WorkspaceView({ activeCase, setActiveCase }) {
                 </option>
               ))}
             </select>
-            <ChevronDown className="w-4 h-4 text-slate-500 absolute right-2 top-2 pointer-events-none" />
           </div>
 
           {currentCase && (

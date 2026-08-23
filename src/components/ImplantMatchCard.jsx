@@ -1,6 +1,7 @@
 import React from 'react';
 import { Ruler, CheckCircle2, ArrowRight, ShieldCheck, Database } from 'lucide-react';
 import Abbr from './Abbr';
+import { getAssetUrl } from '../utils/assetUtils';
 
 export default function ImplantMatchCard({ implantMatch, activeCase, bone }) {
   if (!implantMatch) {

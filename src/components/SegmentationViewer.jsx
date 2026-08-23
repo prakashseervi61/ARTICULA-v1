@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, ZoomIn, ZoomOut, Sliders, Ruler, Crosshair, Sparkles, Activity, Layers } from 'lucide-react';
 import Abbr from './Abbr';
-import { getAssetUrl } from '../utils/assetUtils';
 
 export default function SegmentationViewer({ selectedCase, isAnalyzing }) {
   const [showFemur, setShowFemur] = useState(true);
@@ -276,7 +275,7 @@ export default function SegmentationViewer({ selectedCase, isAnalyzing }) {
 
             {/* Realistic AP Knee Radiograph X-Ray Base Anatomy */}
             {!isQualityFail && (
-              <g className="radiograph-xray-base" opacity="0.85">
+              <g className="radiograph-xray-base hidden" opacity="0.85">
                 {/* Femoral Bone Shadow */}
                 <path d={defaultFemurPath} fill="url(#femurBoneGradient)" stroke="#94a3b8" strokeWidth="1" />
                 
@@ -294,129 +293,16 @@ export default function SegmentationViewer({ selectedCase, isAnalyzing }) {
               </g>
             )}
 
-            {/* Render Uploaded / Sample Radiograph Image */}
+            {/* Render Uploaded / Sample Radiograph Image cleanly without markings */}
             {(selectedCase?.imageUrl || selectedCase?.sampleImageUrl) && (
               <image
-                href={getAssetUrl(selectedCase.imageUrl || selectedCase.sampleImageUrl)}
+                href={selectedCase.imageUrl || selectedCase.sampleImageUrl}
                 width="500"
                 height="600"
                 preserveAspectRatio="xMidYMid slice"
                 opacity="0.9"
               />
             )}
-
-            {/* Transparent High-Contrast Bone Outlines (NO Blue/Green Fills) */}
-            {!isQualityFail && (
-              <g className="transparent-segmentation-overlays" style={{ opacity: opacity / 100 }}>
-                
-                {/* Femoral Bone Outline (Transparent Fill + Bright White Glow Stroke) */}
-                {showFemur && femurPath && (
-                  <g className="femur-highlight-group">
-                    <path
-                      d={femurPath}
-                      fill="none"
-                      stroke="#ffffff"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      filter="url(#femurGlowFilter)"
-                      className="drop-shadow-[0_0_8px_rgba(255,255,255,0.85)] transition-all duration-300"
-                    />
-                  </g>
-                )}
-
-                {/* Tibial Bone Outline (Transparent Fill + Bright White Glow Stroke) */}
-                {showTibia && tibiaPath && (
-                  <g className="tibia-highlight-group">
-                    <path
-                      d={tibiaPath}
-                      fill="none"
-                      stroke="#e2e8f0"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      filter="url(#tibiaGlowFilter)"
-                      className="drop-shadow-[0_0_8px_rgba(226,232,240,0.85)] transition-all duration-300"
-                    />
-                  </g>
-                )}
-
-                {/* Medial Meniscus Cartilage (Amber Translucent Fill + Gold Laser Outline) */}
-                {showMeniscus && meniscusPath && (
-                  <g className="meniscus-highlight-group">
-                    <path
-                      d={meniscusPath}
-                      fill="rgba(251, 191, 36, 0.35)"
-                      stroke="#fbbf24"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      filter="url(#meniscusGlowFilter)"
-                      className="transition-all duration-300"
-                    />
-                  </g>
-                )}
-
-              </g>
-            )}
-
-            {/* Quantitative Measurement Nodes & Callout Pins */}
-            {!isQualityFail && showMeniscus && (
-              <g className="measurement-nodes">
-                {/* Anterior Node */}
-                <circle cx={antLoc.x} cy={antLoc.y} r="4" fill="#fbbf24" stroke="#ffffff" strokeWidth="1.5" />
-                <line x1={antLoc.x} y1={antLoc.y} x2={antLoc.x - 35} y2={antLoc.y - 45} stroke="#fbbf24" strokeWidth="1" strokeDasharray="2 2" />
-                <rect x={antLoc.x - 85} y={antLoc.y - 65} width="95" height="20" rx="4" fill="#ffffff" stroke="#d97706" strokeWidth="1" />
-                <text x={antLoc.x - 37} y={antLoc.y - 51} fill="#92400e" fontSize="9" textAnchor="middle" fontFamily="JetBrains Mono">
-                  ANT: {antMm} mm
-                </text>
-
-                {/* Middle Node */}
-                <circle cx={midLoc.x} cy={midLoc.y} r="4" fill="#fbbf24" stroke="#ffffff" strokeWidth="1.5" />
-                <line x1={midLoc.x} y1={midLoc.y} x2={midLoc.x} y2={midLoc.y + 45} stroke="#fbbf24" strokeWidth="1" strokeDasharray="2 2" />
-                <rect x={midLoc.x - 47} y={midLoc.y + 45} width="95" height="20" rx="4" fill="#ffffff" stroke="#d97706" strokeWidth="1" />
-                <text x={midLoc.x} y={midLoc.y + 59} fill="#92400e" fontSize="9" textAnchor="middle" fontFamily="JetBrains Mono">
-                  MID: {midMm} mm
-                </text>
-
-                {/* Posterior Node */}
-                <circle cx={postLoc.x} cy={postLoc.y} r="4" fill="#fbbf24" stroke="#ffffff" strokeWidth="1.5" />
-                <line x1={postLoc.x} y1={postLoc.y} x2={postLoc.x + 35} y2={postLoc.y - 45} stroke="#fbbf24" strokeWidth="1" strokeDasharray="2 2" />
-                <rect x={postLoc.x - 10} y={postLoc.y - 65} width="95" height="20" rx="4" fill="#ffffff" stroke="#d97706" strokeWidth="1" />
-                <text x={postLoc.x + 37} y={postLoc.y - 51} fill="#92400e" fontSize="9" textAnchor="middle" fontFamily="JetBrains Mono">
-                  POST: {postMm} mm
-                </text>
-              </g>
-            )}
-
-            {/* Bone Measurement Dimension Lines */}
-            {!isQualityFail && (
-              <g className="bone-rulers font-mono text-[9px]">
-                <line x1="80" y1="230" x2="420" y2="230" stroke="#ffffff" strokeWidth="1.5" strokeDasharray="3 3" />
-                <rect x="200" y="218" width="100" height="16" rx="3" fill="#ffffff" stroke="#0e4c81" strokeWidth="1" />
-                <text x="250" y="230" fill="#0e4c81" fontSize="9" textAnchor="middle" fontFamily="JetBrains Mono" fontWeight="bold">
-                  Femur Width: {femWidthMm} mm
-                </text>
-
-                <line x1="80" y1="315" x2="420" y2="315" stroke="#ffffff" strokeWidth="1.5" strokeDasharray="3 3" />
-                <rect x="200" y="307" width="100" height="16" rx="3" fill="#ffffff" stroke="#0e4c81" strokeWidth="1" />
-                <text x="250" y="319" fill="#0e4c81" fontSize="9" textAnchor="middle" fontFamily="JetBrains Mono" fontWeight="bold">
-                  Tibia Width: {tibWidthMm} mm
-                </text>
-              </g>
-            )}
-
-            {/* DICOM Overlay Metadata */}
-            <text x="20" y="35" fill="#0e4c81" fontSize="11" fontFamily="JetBrains Mono" fontWeight="bold">
-              ARTICULA DICOM VIEWPORT
-            </text>
-            <text x="20" y="52" fill="#64748b" fontSize="9" fontFamily="JetBrains Mono">
-              ID: {selectedCase?.id || 'CASE-UPLOAD'} | {selectedCase?.kneeSide || 'Right'} Knee
-            </text>
-            <text x="480" y="35" fill="#0e4c81" fontSize="10" fontFamily="JetBrains Mono" textAnchor="end">
-              KL Grade {selectedCase?.oaGrade ?? 2}
-            </text>
-
           </svg>
         </div>
       </div>

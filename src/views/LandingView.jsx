@@ -4,7 +4,7 @@ import { Activity, Ruler, Cpu, ShieldCheck, ArrowRight, Layers, FileText, CheckC
 
 export default function LandingView() {
   const navigate = useNavigate();
-  const [activePipelineStep, setActivePipelineStep] = useState(2);
+  const [activePipelineStep, setActivePipelineStep] = useState(1);
 
   const pipelineSteps = [
     {
