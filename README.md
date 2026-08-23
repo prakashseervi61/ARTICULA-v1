@@ -61,36 +61,74 @@ npm run build
 
 ---
 
-## 📁 Repository Structure (`kowshik-code`)
+## 📁 Repository Structure
 
 ```
-kowshik-code/
-├── public/assets/
-│   ├── gradcam/          # Grad-CAM heatmap overlays (KL 0-4)
-│   ├── mri/              # Authentic MRI sagittal slice PNGs (Exam IDs 329637, 390116, etc.)
-│   └── samples/          # Dataset radiograph images (KL 0-4)
+.
+├── .github/
+│   └── workflows/
+│       └── deploy.yml                # Automated GitHub Actions deployment to gh-pages
+├── public/
+│   ├── assets/
+│   │   ├── gradcam/                  # Grad-CAM heatmap overlays (KL 0-4)
+│   │   ├── mri/                      # Authentic MRI sagittal slice PNGs & Exam IDs
+│   │   └── samples/                  # Radiograph test samples (KL 0-4)
+│   └── samples/                      # Grade 0 & Grade 2 sample radiographs
+├── scripts/
+│   ├── testPlatform.py               # Platform automated validation test suite
+│   ├── verifyCodebase.js             # Codebase integrity & route verification script
+│   └── synthetic_generator.py        # Synthetic patient case data generator
+├── server/
+│   ├── app.py                        # Optional Flask AI inference & backend server
+│   └── requirements.txt              # Python server dependencies
 ├── src/
-│   ├── components/
-│   │   ├── Header.jsx                # Top navigation bar
-│   │   ├── Footer.jsx                # Platform navigation & system specs
-│   │   ├── SeverityPredictionCard.jsx # Recharts confidence bar chart component
-│   │   ├── SegmentationViewer.jsx    # SVG X-Ray viewport canvas
-│   │   ├── GradCamPanel.jsx          # Model explainability heatmap panel
-│   │   └── Abbr.jsx                  # Clinical abbreviation tooltips
-│   ├── data/
-│   │   ├── syntheticCases.js         # Linked patient case profiles
-│   │   └── mriDataset.js             # Extracted MRI dataset & JSW slice gaps
-│   ├── views/
-│   │   ├── LandingView.jsx           # Platform Overview hero
-│   │   ├── WorkspaceView.jsx         # Clinical diagnostic workbench
-│   │   ├── MRIExplorerView.jsx       # 3D Sagittal MRI viewer & JSW proxy
-│   │   ├── ImplantMatchingView.jsx   # Zimmer NexGen TKA implant sizer
-│   │   ├── ReportView.jsx            # Structured clinical report generator
-│   │   └── AboutView.jsx             # Clinical Decision Support governance
-│   ├── App.jsx                       # React Router configuration
+│   ├── components/                   # Reusable UI & Clinical Components
+│   │   ├── Abbr.jsx                  # Medical terminology tooltip helper
+│   │   ├── AuditLog.jsx              # Clinician action timestamp audit log
+│   │   ├── ClinicianVerification.jsx # Diagnostic sign-off & confirmation modal
+│   │   ├── ClinicianVerificationPanel.jsx # Verification state & review controls
+│   │   ├── DisclaimerBanner.jsx      # Decision support warning banner
+│   │   ├── Footer.jsx                # Platform footer & tech stack specs
+│   │   ├── GradCamPanel.jsx          # Model explainability heatmap viewer
+│   │   ├── Header.jsx                # Top app bar with navigation links
+│   │   ├── ImageUploadDropzone.jsx   # X-Ray & MRI DICOM/PNG upload area
+│   │   ├── ImplantMatchCard.jsx      # TKA implant size match result card
+│   │   ├── ImplantTable.jsx          # Zimmer NexGen manufacturer spec table
+│   │   ├── KneeHealthFingerprint.jsx # Multi-axial patient knee health scoring
+│   │   ├── MeasurementCard.jsx       # JSW gap & meniscus thickness metrics
+│   │   ├── PopulationChart.jsx       # Cohort severity distribution chart
+│   │   ├── QualityCheckCard.jsx      # Image contrast & resolution diagnostic check
+│   │   ├── SegmentationViewer.jsx    # SVG X-Ray joint viewport canvas
+│   │   ├── SeverityPredictionCard.jsx# Recharts KL severity confidence bars
+│   │   ├── Tier1PreviewCard.jsx      # High-level diagnostic summary pill
+│   │   └── Top3ImplantMatrixCard.jsx # Top 3 recommended TKA implants comparison
+│   ├── data/                         # Clinical Datasets & Schemas
+│   │   ├── implantDatabase.js        # Zimmer NexGen TKA sizing catalog
+│   │   ├── mriDataset.js             # 3D Sagittal MRI exam metadata & slice gaps
+│   │   └── syntheticCases.js         # Synthetic patient case profiles & radiograph URLs
+│   ├── utils/                        # Algorithms & Utilities
+│   │   ├── dateUtils.js              # Formatting helpers for audit trails
+│   │   └── implantMatcher.js         # Euclidean distance implant matching engine
+│   ├── views/                        # Page-Level Views & Routers
+│   │   ├── AboutView.jsx             # AI Governance & clinical decision support rules
+│   │   ├── HowItWorksView.jsx        # Interactive pipeline & model walkthrough
+│   │   ├── ImplantMatchingView.jsx   # Patient-specific TKA implant sizer tool
+│   │   ├── LandingView.jsx           # Platform landing page & hero overview
+│   │   ├── MRIExplorerView.jsx       # Interactive 3D Sagittal MRI viewer & JSW proxy
+│   │   ├── PopulationView.jsx        # Cohort distribution & population analytics
+│   │   ├── ReportView.jsx            # Printable clinical report generator
+│   │   └── WorkspaceView.jsx         # Main radiograph diagnostic workbench
+│   ├── App.jsx                       # Master React layout & route provider
+│   ├── index.css                     # Global styles & Tailwind directives
 │   └── main.jsx                      # Application entry point
-├── package.json
-├── vite.config.js
-└── README.md
+├── DESIGN_DOC.md                     # System architecture & technical specification
+├── PRD.md                            # Product Requirements Document
+├── index.html                        # HTML entry point
+├── package.json                      # Node.js dependencies & scripts
+├── package-lock.json                 # Locked dependency tree
+├── postcss.config.js                 # PostCSS configuration for Tailwind
+├── tailwind.config.js                # Tailwind CSS design system tokens
+├── vite.config.js                    # Vite bundler configuration
+└── README.md                         # Project documentation
 ```
 
