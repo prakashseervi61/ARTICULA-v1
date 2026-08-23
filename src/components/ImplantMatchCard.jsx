@@ -74,7 +74,7 @@ export default function ImplantMatchCard({ implantMatch, activeCase, bone }) {
           {/* Render Area with Dynamic Scaled Implant Image */}
           <div className="w-full h-80 sm:h-96 lg:h-[420px] flex items-center justify-center relative overflow-hidden">
             <img
-              src="/assets/tka_implant.png"
+              src={getAssetUrl('/assets/tka_implant.png')}
               alt="3D TKA Total Knee Arthroplasty Implant Components"
               className="w-full h-full object-contain rounded p-2 drop-shadow-[0_10px_25px_rgba(0,0,0,0.6)] transition-transform duration-700 ease-out"
               style={{

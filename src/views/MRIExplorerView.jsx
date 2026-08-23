@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ScanLine, Activity, Info, HelpCircle } from 'lucide-react';
 import { mriCases } from '../data/mriDataset';
+import { getAssetUrl } from '../utils/assetUtils';
 
 const ACL_LABELS = {
   0: { label: 'ACL Intact', color: 'bg-emerald-500', text: 'text-emerald-700', badgeBg: 'bg-emerald-50 border-emerald-200' },
@@ -118,7 +119,7 @@ export default function MRIExplorerView() {
           <div className="relative w-full aspect-square max-w-[580px] mx-auto rounded-lg overflow-hidden bg-black border border-slate-300 shadow-sm group">
             {/* Real MRI Slice PNG from data dataset */}
             <img
-              src={currentSliceImage}
+              src={getAssetUrl(currentSliceImage)}
               alt={`Sagittal Knee MRI Slice ${sliceIndex}`}
               className="w-full h-full object-cover"
             />

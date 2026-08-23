@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, ZoomIn, ZoomOut, Sliders, Ruler, Crosshair, Sparkles, Activity, Layers } from 'lucide-react';
 import Abbr from './Abbr';
+import { getAssetUrl } from '../utils/assetUtils';
 
 export default function SegmentationViewer({ selectedCase, isAnalyzing }) {
   const [showFemur, setShowFemur] = useState(true);
@@ -275,7 +276,7 @@ export default function SegmentationViewer({ selectedCase, isAnalyzing }) {
 
             {/* Realistic AP Knee Radiograph X-Ray Base Anatomy */}
             {!isQualityFail && (
-              <g className="radiograph-xray-base hidden" opacity="0.85">
+              <g className="radiograph-xray-base" opacity="0.85">
                 {/* Femoral Bone Shadow */}
                 <path d={defaultFemurPath} fill="url(#femurBoneGradient)" stroke="#94a3b8" strokeWidth="1" />
                 
@@ -296,7 +297,7 @@ export default function SegmentationViewer({ selectedCase, isAnalyzing }) {
             {/* Render Uploaded / Sample Radiograph Image */}
             {(selectedCase?.imageUrl || selectedCase?.sampleImageUrl) && (
               <image
-                href={selectedCase.imageUrl || selectedCase.sampleImageUrl}
+                href={getAssetUrl(selectedCase.imageUrl || selectedCase.sampleImageUrl)}
                 width="500"
                 height="600"
                 preserveAspectRatio="xMidYMid slice"
@@ -306,7 +307,7 @@ export default function SegmentationViewer({ selectedCase, isAnalyzing }) {
 
             {/* Transparent High-Contrast Bone Outlines (NO Blue/Green Fills) */}
             {!isQualityFail && (
-              <g className="transparent-segmentation-overlays hidden" style={{ opacity: opacity / 100 }}>
+              <g className="transparent-segmentation-overlays" style={{ opacity: opacity / 100 }}>
                 
                 {/* Femoral Bone Outline (Transparent Fill + Bright White Glow Stroke) */}
                 {showFemur && femurPath && (
@@ -361,7 +362,7 @@ export default function SegmentationViewer({ selectedCase, isAnalyzing }) {
 
             {/* Quantitative Measurement Nodes & Callout Pins */}
             {!isQualityFail && showMeniscus && (
-              <g className="measurement-nodes hidden">
+              <g className="measurement-nodes">
                 {/* Anterior Node */}
                 <circle cx={antLoc.x} cy={antLoc.y} r="4" fill="#fbbf24" stroke="#ffffff" strokeWidth="1.5" />
                 <line x1={antLoc.x} y1={antLoc.y} x2={antLoc.x - 35} y2={antLoc.y - 45} stroke="#fbbf24" strokeWidth="1" strokeDasharray="2 2" />
@@ -390,7 +391,7 @@ export default function SegmentationViewer({ selectedCase, isAnalyzing }) {
 
             {/* Bone Measurement Dimension Lines */}
             {!isQualityFail && (
-              <g className="bone-rulers hidden font-mono text-[9px]">
+              <g className="bone-rulers font-mono text-[9px]">
                 <line x1="80" y1="230" x2="420" y2="230" stroke="#ffffff" strokeWidth="1.5" strokeDasharray="3 3" />
                 <rect x="200" y="218" width="100" height="16" rx="3" fill="#ffffff" stroke="#0e4c81" strokeWidth="1" />
                 <text x="250" y="230" fill="#0e4c81" fontSize="9" textAnchor="middle" fontFamily="JetBrains Mono" fontWeight="bold">
